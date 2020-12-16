@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Game.h"
-Game::Game( const Window& window ) 
+Game::Game(const Window& window)
+	: m_Grid{ 8,8, window.width, window.height }
 {
 	Initialize( );
 }
@@ -8,9 +9,21 @@ Game::~Game( )
 {
 	Cleanup( );
 }
+void Game::InitializeTextures()
+{
+	for (int i = -6; i < 7; i++)
+	{
+		if (i != 0)
+		{
+			m_Textures.emplace(i,Texture("Resources/" + std::to_string(i) + ".png"));
+		}
+	}
+}
+
 void Game::Initialize( )
 {
-
+	InitializeTextures();
+	PrintBoard();
 }
 void Game::Cleanup( )
 {
@@ -30,16 +43,37 @@ void Game::Update( float elapsedSec )
 	//}
 }
 
+void Game::PrintBoard() 
+{
+	for (int i = 7; i >= 0; i--)
+	{
+		for (int j = 0; j < 8; j++) //reverse because the 0,0 index of the array is bottom left of the visual board
+		{
+			if (m_Board[i][j] >= 0)
+				std::cout << " ";
+			std::cout << m_Board[i][j] << " ";
+		}
+		std::cout << "\n";
+	}
+}
 void Game::Draw( ) const
 {
 	ClearBackground( );
+	m_Grid.DrawGrid(true);
+	DrawPieces();
 }
-void Game::PrintInstructions() const
+void Game::DrawPieces() const
 {
-}
-void Game::GenerateMap() const
-{
-	
+	for (int i{ 0 }; i < 8; i++)
+	{
+		for (int j{ 0 }; j < 8; j++)
+		{
+			if (m_Board[i][j] != 0)
+				m_Textures.at(m_Board[i][j]).Draw(Rectf{m_Grid.GetPosFromIdx(convert2DTo1D(i,j)).x,m_Grid.GetPosFromIdx(convert2DTo1D(i,j)).y,size* 2.7f,size* 2.7f }, Rectf{ 0,0,68,68 });
+		}
+	}
+	utils::SetColor(Color4f{ 1.f,0.f,0.f,0.3f });
+	utils::FillRect(Rectf{ m_Grid.GetPosFromIdx(convert2DTo1D(0,0)).x, m_Grid.GetPosFromIdx(convert2DTo1D(0,0)).y,size * 2.8f,size * 2.8f });
 }
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {

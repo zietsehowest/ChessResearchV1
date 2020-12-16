@@ -1,13 +1,8 @@
 #pragma once
-#include "Room.h"
-#include "Entity.h"
-#include "Camera.h"
-#include "BulletManager.h"
-#include "EntityManager.h"
-#include "LevelManager.h"
-#include "ItemManager.h"
-#include "Camera.h"
-#include "Player.h"
+#include <vector>
+#include <map>
+#include "Texture.h"
+#include "Grid.h"
 class Game
 {
 public:
@@ -20,7 +15,6 @@ public:
 
 	void Update( float elapsedSec );
 	void Draw( ) const;
-	void PrintInstructions() const;
 	// Event handling
 	void ProcessKeyDownEvent( const SDL_KeyboardEvent& e );
 	void ProcessKeyUpEvent( const SDL_KeyboardEvent& e );
@@ -30,18 +24,27 @@ public:
 
 private:
 	// DATA MEMBERS
-	bool m_MapToggle;
 	const Window m_Window;
-	const Texture* m_BodyTexture;
-	const Texture* m_HeadTexture;
-	Camera m_Camera;
-	BulletManager* m_BulletManager;
-	EntityManager* m_EntityManager;
-	LevelManager* m_LevelManager;
-	ItemManager* m_pItemManager;
 	// FUNCTIONS
 	void Initialize( );
 	void Cleanup( );
 	void ClearBackground( ) const;
-	void GenerateMap() const;
+	void DrawPieces() const;
+	void InitializeTextures();
+	int convert2DTo1D(int row, int column) const {return  (row * 8) + column; };
+
+	Grid m_Grid;
+	int m_Board[8][8] = {
+		1,2,3,4,5,3,2,1,
+		6,6,6,6,6,6,6,6,
+		 6, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0,
+		 0, 0, 0, 0, 0, 0, 0, 0,
+		 -6, -6, -6, -6, -6, -6, -6, -6,
+		 -1, -2, -3, -4, -5, -3, -2, -1};
+	float size = m_Window.width/8;
+	Vector2f offset{ 0.f,0.f };
+	std::map<int, Texture> m_Textures;
+	void PrintBoard();
 };
