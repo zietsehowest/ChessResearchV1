@@ -60,6 +60,8 @@ void Game::Draw( ) const
 {
 	ClearBackground( );
 	m_Grid.DrawGrid(true);
+	utils::SetColor(Color4f{ 1.f,0.f,0.f,1.f });
+	utils::FillRect(Rectf{ m_Grid.GetPosFromIdx(m_selectedIndex).x, m_Grid.GetPosFromIdx(m_selectedIndex).y,size * 2.8f,size * 2.8f });
 	DrawPieces();
 }
 void Game::DrawPieces() const
@@ -72,8 +74,10 @@ void Game::DrawPieces() const
 				m_Textures.at(m_Board[i][j]).Draw(Rectf{m_Grid.GetPosFromIdx(convert2DTo1D(i,j)).x,m_Grid.GetPosFromIdx(convert2DTo1D(i,j)).y,size* 2.7f,size* 2.7f }, Rectf{ 0,0,68,68 });
 		}
 	}
-	utils::SetColor(Color4f{ 1.f,0.f,0.f,0.3f });
-	utils::FillRect(Rectf{ m_Grid.GetPosFromIdx(convert2DTo1D(0,0)).x, m_Grid.GetPosFromIdx(convert2DTo1D(0,0)).y,size * 2.8f,size * 2.8f });
+}
+std::vector<int> Game::ReturnAllLegalMoves(int index, int piece) const
+{
+
 }
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
@@ -109,19 +113,14 @@ void Game::ProcessMouseDownEvent( const SDL_MouseButtonEvent& e )
 
 void Game::ProcessMouseUpEvent( const SDL_MouseButtonEvent& e )
 {
-	//std::cout << "MOUSEBUTTONUP event: ";
-	//switch ( e.button )
-	//{
-	//case SDL_BUTTON_LEFT:
-	//	std::cout << " left button " << std::endl;
-	//	break;
-	//case SDL_BUTTON_RIGHT:
-	//	std::cout << " right button " << std::endl;
-	//	break;
-	//case SDL_BUTTON_MIDDLE:
-	//	std::cout << " middle button " << std::endl;
-	//	break;
-	//}
+	std::cout << "MOUSEBUTTONUP event: ";
+	switch ( e.button )
+	{
+	case SDL_BUTTON_LEFT:
+		std::cout << " left button " << std::endl;
+		m_selectedIndex = m_Grid.GetIndexFromPos(Point2f(float(e.x),float(e.y)));
+		break;
+	}
 }
 
 void Game::ClearBackground( ) const

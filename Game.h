@@ -32,12 +32,13 @@ private:
 	void DrawPieces() const;
 	void InitializeTextures();
 	int convert2DTo1D(int row, int column) const {return  (row * 8) + column; };
-
+	std::vector<int> ReturnAllLegalMoves(int index,int piece) const;
+	int m_selectedIndex;
 	Grid m_Grid;
 	int m_Board[8][8] = {
-		1,2,3,4,5,3,2,1,
-		6,6,6,6,6,6,6,6,
-		 6, 0, 0, 0, 0, 0, 0, 0,
+		 1, 2, 3, 4, 5, 3, 2, 1,
+		 6, 6, 6, 6, 6, 6, 6, 6,
+		 0, 0, 0, 0, 0, 0, 0, 0,
 		 0, 0, 0, 0, 0, 0, 0, 0,
 		 0, 0, 0, 0, 0, 0, 0, 0,
 		 0, 0, 0, 0, 0, 0, 0, 0,

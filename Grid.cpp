@@ -58,7 +58,7 @@ int Grid::GetIndexFromPos(const Point2f& pos) const
 {
 	int idx{}, col{}, row{};
 	col = int(pos.x / m_CellWidth);
-	row = int(pos.y / m_CellHeight);
+	row = int((m_CellHeight*m_Rows - pos.y) / m_CellHeight);
 
 	idx = col + (row * m_Cols);
 
