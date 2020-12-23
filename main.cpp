@@ -11,7 +11,7 @@ int main( int argc, char *argv[] )
 	{
 		StartHeapControl();
 
-		Core core{ Window{ "ChessEngine - Boonen, Zietse - 2DAE18", 900.f, 900.f } };
+		Core core{ Window{ "ChessEngine - Boonen, Zietse - 2DAE18", 640.f, 640.f } };
 		core.Run();
 	}
 	DumpMemoryLeaks();
