@@ -39,4 +39,11 @@ So how can we fix this ? Introducing Alpha Beta pruning !
 
 What Alpha Beta Pruning does is while traversing nodes to check for possible scores it checks when entering a branch of a certain node if the parent node is already lower or higher then the given node. When this is true we already know that the player won't even need the underlaying branches to achieve its highest possible score. We can see how this works clearly on these images
 
-![MinimaxWithoutAB](Images/Image4.png) ![MinimaxWithAB](Images/Image5.png)
+**Without Pruning**
+![MinimaxWithoutAB](Images/Image4.PNG) 
+**With Pruning**
+![MinimaxWithAB](Images/Image5.PNG)
+
+# Conclusion
+
+My conclusion of this research project is that there is a lot more behind chess engines then there seems. To write a chess Engine that really thinks and not just reads sets of data is really challenging and maybe for another time ! But It was already really interesting to write something that comes even close to a real life chess engine.
