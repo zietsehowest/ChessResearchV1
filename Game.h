@@ -6,7 +6,7 @@
 struct MoveStruct
 {
 	int fromIdx;
-	std::vector<int> possibleMoves;
+	int LegalMove;
 };
 class Game
 {
@@ -51,6 +51,7 @@ private:
 		 0, 0, 0, 0, 0, 0, 0, 0,
 		 -6, -6, -6, -6, -6, -6, -6, -6,
 		 -1, -2, -3, -4, -5, -3, -2, -1};
+	int m_TempBoard[8][8];
 	int m_WhiteThreats[8][8] = {
 		 0,  0,  0,  0,  0,  0,  0,  0,
 		 0,  0,  0,  0,  0,  0,  0,  0,
@@ -94,6 +95,7 @@ private:
 	// --------
 	void PlayMove(int startIdx, int destIdx);
 	void CheckCastlingMovement();
+	void MovePieceAI(int startIdx, int destIdx);
 	void MovePiece(int startIdx, int destIdx);
 	bool Castle(int startIdx, int destIdx);
 	bool Promote(int startIdx, int destIdx);
@@ -102,7 +104,8 @@ private:
 	//-------
 	//AI
 	//------
-	int MiniMaxNoAB(int depth,int board,bool IsPlayer,bool isMaximizingPlayer=true);
+	std::pair<int, MoveStruct> MiniMaxNoAB(int depth,int (*board)[8],bool IsPlayer,bool isMaximizingPlayer=true); //first is the value of the move second is move itself
+	void UpdateTempBoard();
 #pragma region LegalMovesCheckers
 	// ---------------------------------------------------
 	//				  LEGAL MOVE GETTERS				  

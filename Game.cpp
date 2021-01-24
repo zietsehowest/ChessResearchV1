@@ -45,7 +45,16 @@ void Game::Update(float elapsedSec)
 	//{
 	//	std::cout << "Left and up arrow keys are down\n";
 	//}
-	
+	if (!m_WhiteToPlay)
+	{
+		UpdateTempBoard();
+		auto bestMove = MiniMaxNoAB(2, m_TempBoard, false);
+		if (bestMove.second.fromIdx != -1)
+		{
+			m_SelectedIndex = bestMove.second.fromIdx;
+			m_SelectedMove = bestMove.second.LegalMove;
+		}
+	}
 	PlayMove(m_SelectedIndex, m_SelectedMove);
 }
 
@@ -132,16 +141,12 @@ void Game::PlayMove(int startIdx, int destIdx)
 		m_SelectedMove = -1;
 		return;
 	}
-	/*if (!m_WhiteToPlay && m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] > 0)
+	if (!m_WhiteToPlay && m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] > 0)
 	{
 
 		m_SelectedIndex = -1;
 		m_SelectedMove = -1;
 		return;
-	}*/
-	if (!m_WhiteToPlay)
-	{
-
 	}
 	auto legalMoves = GetAllLegalMoves(m_SelectedIndex,m_Board);
 	if (legalMoves.empty())
@@ -377,7 +382,11 @@ void Game::MovePiece(int startIdx, int destIdx)
 	m_Board[m_Grid.GetRowFromIdx(destIdx)][m_Grid.GetColFromIdx(destIdx)] = m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)];
 	m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] = 0;
 }
-
+void Game::MovePieceAI(int startIdx, int destIdx)
+{
+	m_TempBoard[m_Grid.GetRowFromIdx(destIdx)][m_Grid.GetColFromIdx(destIdx)] = m_TempBoard[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)];
+	m_TempBoard[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] = 0;
+}
 bool Game::Castle(int startIdx, int destIdx)
 {
 	// Check for castle:
@@ -517,34 +526,55 @@ void Game::CheckEnPassant(int startIdx, int destIdx)
 	}
 }
 
-int Game::MiniMaxNoAB(int depth, int board, bool IsPlayer, bool isMaximizingPlayer)
+std::pair<int, MoveStruct> Game::MiniMaxNoAB(int depth, int(*board)[8], bool IsPlayer, bool isMaximizingPlayer)
 {
 	if (depth == 0)
-		int value = 0;
-	return -1;
+		return { -1,MoveStruct{-1,-1} };
 	//Going recursive search possible moves
-	int bestMoveIdx;
+	MoveStruct bestMoveIdx;
 	std::vector<MoveStruct> possibleMoves{}; //all possible moves for all idx
 	for (int i{ 0 }; i < 63; i++)
 	{
-		std::vector<int> tempLegalMoves = GetAllLegalMoves(i);
-		possibleMoves.insert(possibleMoves.end(), tempLegalMoves.begin(), tempLegalMoves.end());
+		std::vector<int> legalMovesFromidx = GetAllLegalMoves(i);
+		for (int i = 0; i < legalMovesFromidx.size(); i++)
+			possibleMoves.push_back(MoveStruct{ i,legalMovesFromidx[i] });
 	}
-	std::sort(begin(possibleMoves), end(possibleMoves), [](int a, int b) //setting random order for all possible moves
+	std::sort(begin(possibleMoves), end(possibleMoves), [](MoveStruct a, MoveStruct b) //setting random order for all possible moves
 		{
 			int random = rand() % 1;
 			if (random == 0)
-				return a <= b;
+				return a.LegalMove <= b.LegalMove;
 			else
-				return a > b;
+				return a.LegalMove > b.LegalMove;
 		});
 	int bestMoveValue = isMaximizingPlayer ? 10000 : -10000; //setting best value to max depending if player is trying to max or min his score
 	//searching through all possible moves
 	for (int i = 0; i < possibleMoves.size(); i++)
 	{
-		int move = possibleMoves.at(i);
-		MovePiece()
+		int moveFrom = possibleMoves.at(i).fromIdx;
+		int moveTo = possibleMoves.at(i).LegalMove;
+		MovePieceAI(moveFrom, moveTo);
+		int value = MiniMaxNoAB(depth - 1, board, IsPlayer, !isMaximizingPlayer).first;
+
+		if (isMaximizingPlayer)
+		{
+			//Look for moves that maximize position
+			if (value > bestMoveValue)
+			{
+				bestMoveValue = value;
+				bestMoveIdx = { moveFrom,moveTo };
+			}
+		}
+		else
+		{
+			if (value < bestMoveValue)
+			{
+				bestMoveValue = value;
+				bestMoveIdx = { moveFrom,moveTo };
+			}
+		}
 	}
+	return { bestMoveValue,bestMoveIdx };
 
 }
 
@@ -780,6 +810,17 @@ void Game::CheckCheck(int index, int king, std::vector<int>& moves) const
 // -------------------------------------------------------
 //					LEGAL MOVE GETTERS
 // -------------------------------------------------------
+
+void Game::UpdateTempBoard()
+{
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			m_TempBoard[i][j] = m_Board[i][j];
+		}
+	}
+}
 
 std::vector<int> Game::GetAllLegalMoves(int index) const
 {
