@@ -1,6 +1,6 @@
 #pragma once
+#include <iostream>
 #include <string>
-
 struct Window
 {
 	explicit Window( const std::string& title = "Title", float width = 320.0f, 
@@ -68,6 +68,7 @@ struct Ellipsef
 	float radiusX;
 	float radiusY;
 };
+
 
 
 

@@ -132,13 +132,18 @@ void Game::PlayMove(int startIdx, int destIdx)
 		m_SelectedMove = -1;
 		return;
 	}
-	if (!m_WhiteToPlay && m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] > 0)
+	/*if (!m_WhiteToPlay && m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] > 0)
 	{
+
 		m_SelectedIndex = -1;
 		m_SelectedMove = -1;
 		return;
+	}*/
+	if (!m_WhiteToPlay)
+	{
+
 	}
-	auto legalMoves = GetAllLegalMoves(m_SelectedIndex);
+	auto legalMoves = GetAllLegalMoves(m_SelectedIndex,m_Board);
 	if (legalMoves.empty())
 	{
 		m_SelectedIndex = -1;
@@ -510,6 +515,37 @@ void Game::CheckEnPassant(int startIdx, int destIdx)
 	{
 		m_EnPassant = false;
 	}
+}
+
+int Game::MiniMaxNoAB(int depth, int board, bool IsPlayer, bool isMaximizingPlayer)
+{
+	if (depth == 0)
+		int value = 0;
+	return -1;
+	//Going recursive search possible moves
+	int bestMoveIdx;
+	std::vector<MoveStruct> possibleMoves{}; //all possible moves for all idx
+	for (int i{ 0 }; i < 63; i++)
+	{
+		std::vector<int> tempLegalMoves = GetAllLegalMoves(i);
+		possibleMoves.insert(possibleMoves.end(), tempLegalMoves.begin(), tempLegalMoves.end());
+	}
+	std::sort(begin(possibleMoves), end(possibleMoves), [](int a, int b) //setting random order for all possible moves
+		{
+			int random = rand() % 1;
+			if (random == 0)
+				return a <= b;
+			else
+				return a > b;
+		});
+	int bestMoveValue = isMaximizingPlayer ? 10000 : -10000; //setting best value to max depending if player is trying to max or min his score
+	//searching through all possible moves
+	for (int i = 0; i < possibleMoves.size(); i++)
+	{
+		int move = possibleMoves.at(i);
+		MovePiece()
+	}
+
 }
 
 void Game::PrintBoard()

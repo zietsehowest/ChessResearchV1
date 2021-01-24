@@ -98,5 +98,8 @@
     <ClInclude Include="Grid.h">
       <Filter>Framework Files</Filter>
     </ClInclude>
+    <ClInclude Include="BTS.h">
+      <Filter>Game Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

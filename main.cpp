@@ -4,7 +4,7 @@
 
 void StartHeapControl();
 void DumpMemoryLeaks();
-
+void minimax(int index, int depth, int maximizingPlayer);
 int main( int argc, char *argv[] )
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
@@ -17,7 +17,10 @@ int main( int argc, char *argv[] )
 	DumpMemoryLeaks();
 	return 0;
 }
-
+void minimax(int index, int depth, int maximizingPlayer)
+{
+	
+}
 
 void StartHeapControl()
 {

@@ -3,6 +3,11 @@
 #include <map>
 #include "Texture.h"
 #include "Grid.h"
+struct MoveStruct
+{
+	int fromIdx;
+	std::vector<int> possibleMoves;
+};
 class Game
 {
 public:
@@ -94,6 +99,11 @@ private:
 	bool Promote(int startIdx, int destIdx);
 	void CheckEnPassant(int startIdx, int destIdx);
 
+	//-------
+	//AI
+	//------
+	int MiniMaxNoAB(int depth,int board,bool IsPlayer,bool isMaximizingPlayer=true);
+#pragma region LegalMovesCheckers
 	// ---------------------------------------------------
 	//				  LEGAL MOVE GETTERS				  
 	// ---------------------------------------------------
@@ -129,4 +139,5 @@ private:
 	std::vector<int> GetBlackKingMoves(int index) const;
 	std::vector<int> GetWhiteKingMoves(int index, int board[8][8]) const;
 	std::vector<int> GetBlackKingMoves(int index, int board[8][8]) const;
+#pragma endregion
 };

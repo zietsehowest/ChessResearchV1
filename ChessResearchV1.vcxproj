@@ -172,6 +172,7 @@
     <ClCompile Include="Vector2f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BTS.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Grid.h" />
