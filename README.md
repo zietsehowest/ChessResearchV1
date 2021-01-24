@@ -19,3 +19,22 @@ So this is the basics of the minmax algorithm.
 # Applying the algorithm on a chess board
 
 To apply chess to the minimax algorithm we first need to determine some things. To begin with every piece needs a certain value. Because we are going to calculate our tree with the determined values for each piece. This is how we are going to know what the difference is between taking a pawn and taking a rook for example.
+
+![MinimaxChess](Images/Image2.jpeg)
+
+* **MAX PART**
+As you can see in this Image white needs to move now (white is assigned as the player that always tries to maximize its score). White can choose between 2 options or take the knight or take the bishop. Taking the bishop results to a score of -80 because the layers below are also calculated. And taking the bishop results in a score of -50 because its white's turn he chooses to take the bishop because that results in a higher score down the line.
+
+* **MIN PART**
+Now as the second move it is blacks turn. Black tries to get a score as low as possible so it choses the move that results in the lowest score possible.
+
+---
+Now there is 1 thing we haven't discussed. When executing this algorithm we choose a certain depth. This depth represents the amount of Parents and Children that we traverse to get the highest or lowest score possible. But increasing this depth is at a high cost because imagine taking depth 1 we search 1 node. But taking depth 2 it becomes 2 possibilities and so on. On this image you can clearly see that this is very performance heavy.
+
+![PerformanceMinimax](Images/Image3.jpg)
+
+So how can we fix this ? Introducing Alpha Beta pruning !
+
+# Alpha Beta Pruning with MiniMax Algorithm
+
+What Alpha Beta Pruning does is while traversing nodes to check for possible scores it checks when entering a branch of a certain node if the parent node is already lower or higher then the given node. When this is true we already know that the player won't even need the underlaying branches to achieve its highest possible score. We can see the working clearly on this Images
