@@ -51,11 +51,12 @@ void Game::Update(float elapsedSec)
 		auto bestMove = MiniMaxNoAB(2, m_TempBoard, false);
 		if (bestMove.second.fromIdx != -1)
 		{
-			m_SelectedIndex = bestMove.second.fromIdx;
-			m_SelectedMove = bestMove.second.LegalMove;
+			PlayMove(bestMove.second.fromIdx, bestMove.second.LegalMove);
 		}
 	}
-	PlayMove(m_SelectedIndex, m_SelectedMove);
+	else
+		PlayMove(m_SelectedIndex, m_SelectedMove);
+	
 }
 
 void Game::CheckMate()
@@ -134,37 +135,40 @@ void Game::CheckMate()
 
 void Game::PlayMove(int startIdx, int destIdx)
 {
-	if (m_SelectedIndex == -1) return;
-	if (m_WhiteToPlay && m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] < 0)
+	if (m_WhiteToPlay)
 	{
-		m_SelectedIndex = -1;
-		m_SelectedMove = -1;
-		return;
-	}
-	if (!m_WhiteToPlay && m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] > 0)
-	{
-
-		m_SelectedIndex = -1;
-		m_SelectedMove = -1;
-		return;
-	}
-	auto legalMoves = GetAllLegalMoves(m_SelectedIndex,m_Board);
-	if (legalMoves.empty())
-	{
-		m_SelectedIndex = -1;
-		m_SelectedMove = -1;
-		return;
-	}
-	if (std::find(legalMoves.begin(), legalMoves.end(), m_SelectedMove) == legalMoves.end())
-	{
-		if (m_SelectedMove > 0)
+		if (m_SelectedIndex == -1) return;
+		if (m_WhiteToPlay && m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] < 0)
 		{
 			m_SelectedIndex = -1;
 			m_SelectedMove = -1;
+			return;
 		}
-		return;
+		if (!m_WhiteToPlay && m_Board[m_Grid.GetRowFromIdx(startIdx)][m_Grid.GetColFromIdx(startIdx)] > 0)
+		{
+
+			m_SelectedIndex = -1;
+			m_SelectedMove = -1;
+			return;
+		}
+		auto legalMoves = GetAllLegalMoves(m_SelectedIndex, m_Board);
+		if (legalMoves.empty())
+		{
+			m_SelectedIndex = -1;
+			m_SelectedMove = -1;
+			return;
+		}
+		if (std::find(legalMoves.begin(), legalMoves.end(), m_SelectedMove) == legalMoves.end())
+		{
+			if (m_SelectedMove > 0)
+			{
+				m_SelectedIndex = -1;
+				m_SelectedMove = -1;
+			}
+			return;
+		}
 	}
-	MovePiece(m_SelectedIndex, m_SelectedMove);
+	MovePiece(startIdx, destIdx);
 	
 	CheckCastlingMovement();
 
@@ -529,9 +533,11 @@ void Game::CheckEnPassant(int startIdx, int destIdx)
 std::pair<int, MoveStruct> Game::MiniMaxNoAB(int depth, int(*board)[8], bool IsPlayer, bool isMaximizingPlayer)
 {
 	if (depth == 0)
+	{
 		return { -1,MoveStruct{-1,-1} };
+	}	
 	//Going recursive search possible moves
-	MoveStruct bestMoveIdx;
+	MoveStruct bestMoveIdx{};
 	std::vector<MoveStruct> possibleMoves{}; //all possible moves for all idx
 	for (int i{ 0 }; i < 63; i++)
 	{
@@ -543,7 +549,7 @@ std::pair<int, MoveStruct> Game::MiniMaxNoAB(int depth, int(*board)[8], bool IsP
 		{
 			int random = rand() % 1;
 			if (random == 0)
-				return a.LegalMove <= b.LegalMove;
+				return a.LegalMove < b.LegalMove;
 			else
 				return a.LegalMove > b.LegalMove;
 		});
@@ -551,8 +557,8 @@ std::pair<int, MoveStruct> Game::MiniMaxNoAB(int depth, int(*board)[8], bool IsP
 	//searching through all possible moves
 	for (int i = 0; i < possibleMoves.size(); i++)
 	{
-		int moveFrom = possibleMoves.at(i).fromIdx;
-		int moveTo = possibleMoves.at(i).LegalMove;
+		int moveFrom = possibleMoves[i].fromIdx;
+		int moveTo = possibleMoves[i].LegalMove;
 		MovePieceAI(moveFrom, moveTo);
 		int value = MiniMaxNoAB(depth - 1, board, IsPlayer, !isMaximizingPlayer).first;
 
@@ -573,6 +579,8 @@ std::pair<int, MoveStruct> Game::MiniMaxNoAB(int depth, int(*board)[8], bool IsP
 				bestMoveIdx = { moveFrom,moveTo };
 			}
 		}
+		//undo game
+		UpdateTempBoard();
 	}
 	return { bestMoveValue,bestMoveIdx };
 
